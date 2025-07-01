@@ -21,11 +21,11 @@ func main() {
 
 	tasks, err := redmine.GetTasks(url, api_key)
 	if err != nil {
-		fmt.Println("Erro ao buscar tarefas:", err)
+		log.Fatal("Erro ao buscar tarefas:", err)
 		return
 	}
 
 	for _, issue := range tasks.Issue {
-		fmt.Printf("ID: %d - Task: %s\n", issue.ID, issue.Subject)
+		fmt.Printf("ID: %d - Task: %s - Priority: %s\n", issue.ID, issue.Subject, issue.Priority.Name)
 	}
 }

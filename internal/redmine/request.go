@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"time"
 )
@@ -52,7 +53,7 @@ type CustomField struct {
 func GetTasks(redmine_url string, api_key string) (*RedmineIssueResponse, error) {
 	req, err := http.NewRequest("GET", redmine_url, nil)
 	if err != nil {
-		fmt.Println("Error creating request:", err)
+		log.Fatal("Error creating request:", err)
 		return nil, err
 	}
 	req.Header.Set("X-Redmine-API-Key", api_key)
@@ -60,7 +61,7 @@ func GetTasks(redmine_url string, api_key string) (*RedmineIssueResponse, error)
 	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
-		fmt.Println("Error making request:", err)
+		log.Fatal("Error making request:", err)
 		return nil, err
 	}
 	defer res.Body.Close()
@@ -71,14 +72,14 @@ func GetTasks(redmine_url string, api_key string) (*RedmineIssueResponse, error)
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		fmt.Println("Error reading response:", err)
+		log.Fatal("Error reading response:", err)
 		return nil, err
 	}
 
 	var tasks RedmineIssueResponse
 	err = json.Unmarshal(body, &tasks)
 	if err != nil {
-		fmt.Println("Error decoding JSON:", err)
+		log.Fatal("Error decoding JSON:", err)
 		return nil, err
 	}
 
