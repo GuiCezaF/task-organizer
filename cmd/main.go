@@ -33,7 +33,7 @@ func main() {
 		return
 	}
 
-	err = nj.WriteJournal(tasks.Issue)
+	err = nj.WriteJournal(tasks.Issue, url)
 	if err != nil {
 		log.Fatalf("Erro ao escrever tarefas no journal: %s", err)
 	}

@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
 	"time"
 
 	"github.com/GuiCezaF/task-organizer/internal/redmine"
@@ -43,6 +44,40 @@ func (j *Journal) NewJournal() error {
 	return nil
 }
 
-func (j *Journal) WriteJournal(issues []redmine.Issue) error {
+func (j *Journal) WriteJournal(issues []redmine.Issue, url string) error {
+	fileFullPath := filepath.Join(j.Path, j.Filename)
+
+	file, err := os.OpenFile(fileFullPath, os.O_APPEND|os.O_RDWR, 0644)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	priorityOrder := map[string]int{
+		"4 - Alta":           1,
+		"3 - Normal":         2,
+		"2 - Baixa":          3,
+		"0 - Não priorizado": 4,
+	}
+
+	sort.SliceStable(issues, func(i, j int) bool {
+		return priorityOrder[issues[i].Priority.Name] < priorityOrder[issues[j].Priority.Name]
+	})
+
+	_, err = file.WriteString("\n- ## Tarefas do dia\n")
+	if err != nil {
+		return err
+	}
+
+	for _, task := range issues {
+		formattedTask := fmt.Sprintf("\t- TODO -> %d/%s | %s | Prioridade %s | [LINK](%s/issues/%d) \n",
+			task.ID, task.Subject, task.Project.Name, task.Priority.Name, url, task.ID)
+
+		_, err := file.WriteString(formattedTask)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }

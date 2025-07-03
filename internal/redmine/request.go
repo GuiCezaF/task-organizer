@@ -51,7 +51,8 @@ type CustomField struct {
 }
 
 func GetTasks(redmine_url string, api_key string) (*RedmineIssueResponse, error) {
-	req, err := http.NewRequest("GET", redmine_url, nil)
+	url := redmine_url + "/issues.json?assigned_to_id=me&status_id=open"
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Fatal("Error creating request:", err)
 		return nil, err
